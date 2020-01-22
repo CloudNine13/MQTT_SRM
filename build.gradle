@@ -5,8 +5,15 @@ buildscript {
     repositories {
         google()
         jcenter()
-        
+
     }
+
+    repositories {
+        maven {
+            url "https://repo.eclipse.org/content/repositories/paho-releases/"
+        }
+    }
+
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
