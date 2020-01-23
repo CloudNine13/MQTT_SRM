@@ -1,8 +1,8 @@
 package com.dzichkovskii.mqttsrm
 
-import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.Test
 
-import org.junit.Assert.*
 
 /**
  * Example local unit test, which will execute on the development machine (host).
