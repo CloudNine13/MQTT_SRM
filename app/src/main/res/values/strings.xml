@@ -3,4 +3,11 @@
     <string name="connect">Connect</string>
     <string name="subscribe">Subscribe</string>
     <string name="publish">Publish</string>
+    <string name="broker_address_hint">Your broker address here</string>
+    <string name="broker_address_tv">Broker Address:</string>
+    <string name="error_text">Error text</string>
+    <string name="broker_id_hint">Your ID here</string>
+    <string name="broker_id_tv">Broker ID:</string>
+    <string name="broker_port_hint">Your broker port here</string>
+    <string name="broker_port_tv">Broker port:</string>
 </resources>

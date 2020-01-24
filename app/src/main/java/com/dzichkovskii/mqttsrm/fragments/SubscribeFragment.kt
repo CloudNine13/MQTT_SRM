@@ -1,3 +1,7 @@
+/**
+ * @author Igor Dzichkovskii
+ */
+
 package com.dzichkovskii.mqttsrm.fragments
 
 import android.os.Bundle
