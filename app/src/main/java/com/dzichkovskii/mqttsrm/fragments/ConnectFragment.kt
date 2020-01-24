@@ -44,7 +44,7 @@ class ConnectFragment : Fragment() {
         //val testCliendId = MqttClient.generateClientId()
         //val testAddress = "tcp://broker.hivemq.com:1883"
 
-        root.findViewById<Button>(R.id.btn_connect).setOnClickListener {
+        root.findViewById<Button>(R.id.btn_subscribe).setOnClickListener {
             connect(context, view)
         }
         return root
