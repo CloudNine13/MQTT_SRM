@@ -4,16 +4,21 @@
 
 package com.dzichkovskii.mqttsrm.fragments
 
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.dzichkovskii.mqttsrm.R
+import com.dzichkovskii.mqttsrm.adapters.SubscribeAdapter
 import com.google.android.material.chip.Chip
 import kotlinx.android.synthetic.main.fragment_subscribe.view.*
 import org.eclipse.paho.android.service.MqttAndroidClient
@@ -23,22 +28,22 @@ class SubscribeFragment : Fragment() {
 
     companion object {
 
-        fun newInstance(mqttAndroidClient: MqttAndroidClient): SubscribeFragment {
+        fun passMQTTAndroidClientToSubscribe(mqttAndroidClient: MqttAndroidClient): SubscribeFragment {
             val fragment = SubscribeFragment()
             this.mqttAndroidClient = mqttAndroidClient
             return fragment
         }
 
         private var mqttAndroidClient: MqttAndroidClient = MqttAndroidClient(null, null, null)
+        private lateinit var recyclerView: RecyclerView
+        private lateinit var viewAdapter: SubscribeAdapter
 
         const val TAG = "SubscribeFragment"
-        const val ON_SUCCESS = "You subscribed successfully."
-        const val ON_FAILURE = "You didn't subscribed to topic. Probably this topic don't exist."
-        const val CONNECTION_ERROR = "The topic don't exist or you have connection problems. " +
-                "Check your internet connection or change the topic's name"
     }
 
     private var checkedOption: Int = 0 //Default value of qos
+    val listOfMessages = mutableListOf<String>()
+    val topic = "test"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,7 +57,7 @@ class SubscribeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.chip_group?.setOnCheckedChangeListener { _, checkedId: Int ->
+        view.chip_group_subscribe?.setOnCheckedChangeListener { _, checkedId: Int ->
             val chip: Chip? = view.findViewById(checkedId)
             val qos = chip?.text.toString().toInt()
             checkedOption = qos
@@ -60,55 +65,47 @@ class SubscribeFragment : Fragment() {
             Log.d(TAG, "Checked option passed with value $checkedOption")
         }
 
-        mqttAndroidClient.setCallback(
-            object: MqttCallback {
-                override fun messageArrived(topic: String?, message: MqttMessage?) {
-                    Log.d(TAG, "Message arrived")
-                }
-
-                override fun connectionLost(cause: Throwable?) {
-                    Log.d(TAG, "Connection lost")
-                }
-
-                override fun deliveryComplete(token: IMqttDeliveryToken?) {
-                    Log.d(TAG, "Delivery completed")
-                }
-
-            }
-        )
+        //initRecyclerView()
 
         view.findViewById<Button>(R.id.btn_subscribe).setOnClickListener {
             subscribe()
         }
     }
 
-    private val connectFragment = ConnectFragment()
-
     private fun subscribe(){
 
-        val inputTopic = view?.findViewById(R.id.et_topic) as EditText
-        val topic = inputTopic.text.toString()
-        //val topic = "test"
+        //val inputTopic = view?.findViewById(R.id.et_subscribe_topic) as EditText
+        //val topic = inputTopic.text.toString()
+
 
         try {
             Log.d(TAG, "Checked option in subscribe method is $checkedOption")
             mqttAndroidClient.subscribe(topic,
-                checkedOption, context, object: IMqttActionListener {
-                        override fun onSuccess(asyncActionToken: IMqttToken) {
-                            Toast.makeText(context, ON_SUCCESS, Toast.LENGTH_SHORT).show()
-                            Log.d(TAG, "Connected successfully")
-                        }
+                checkedOption, object : IMqttMessageListener {
+                    override fun messageArrived(topic: String?, message: MqttMessage) {
 
-                        override fun onFailure(
-                            asyncActionToken: IMqttToken,
-                            exception: Throwable
-                        ) {
-                            Toast.makeText(context, ON_FAILURE, Toast.LENGTH_SHORT).show()
-                            Log.d(TAG, "Didn't connected")
-                        }
-                    })
-        } catch (e: MqttException) {
-            connectFragment.displayErrorMessage(CONNECTION_ERROR, view, this)
+                        //val data = String(message.payload, charset("UTF-8"))
+
+                        //listOfMessages.add(data)
+                        //viewAdapter.submitList(listOfMessages)
+                        //viewAdapter.notifyDataSetChanged()
+
+                        //view?.findViewById<TextView>(R.id.rv_tv_subscribe_topic_name)?.text = topic
+
+                    }
+                })
+        } catch (e: Exception){}
+    /**
+     * Two methods to hide the keyboard after the result is shown
+     */
+    }
+
+    fun initRecyclerView(){
+        recyclerView = view!!.findViewById<RecyclerView>(R.id.rv_subscribe).apply {
+            layoutManager = LinearLayoutManager(activity)
+
+            viewAdapter = SubscribeAdapter(listOfMessages, topic, context)
+            adapter = viewAdapter
         }
     }
 }

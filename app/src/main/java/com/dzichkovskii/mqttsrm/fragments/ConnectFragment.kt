@@ -16,6 +16,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.dzichkovskii.mqttsrm.R
 import org.eclipse.paho.android.service.MqttAndroidClient
@@ -59,33 +60,36 @@ class ConnectFragment : Fragment(){
      */
     private fun connect(context: Context?,
                         view: View?) {
-        val inputAddress = view?.findViewById(R.id.tv_broker_address_input) as EditText
-        val inputId = view.findViewById(R.id.tv_client_id_input) as EditText
-        val inputPort = view.findViewById(R.id.tv_broker_port_input) as EditText
+        //val inputAddress = view?.findViewById(R.id.tv_broker_address_input) as EditText
+        //val inputId = view.findViewById(R.id.tv_client_id_input) as EditText
+        //val inputPort = view.findViewById(R.id.tv_broker_port_input) as EditText
 
         //Making the string the user needs to put more friendly
-        val addressStringSimplification = "tcp://" + inputAddress.text.toString() +
-                ":" + inputPort.text.toString()
+        //val addressStringSimplification = "tcp://" + inputAddress.text.toString() +
+        //       ":" + inputPort.text.toString()
 
 //        [TEST VALUES]
-//        val addressStringSimplification = "tcp://broker.hivemq.com:1883"
-//        val testClientId = MqttClient.generateClientId()
+        val addressStringSimplification = "tcp://broker.hivemq.com:1883"
+        val testClientId = MqttClient.generateClientId()
 
-        mqttAndroidClient = MqttAndroidClient(context?.applicationContext, addressStringSimplification, inputId.text.toString())
+        mqttAndroidClient = MqttAndroidClient(context?.applicationContext, addressStringSimplification, testClientId/*inputId.text.toString()*/)
 
-        if(!addressStringSimplification.isBlank() && addressStringSimplification != "tcp://:" && !inputId.text.toString().isBlank()) {
-            val someFragment = SubscribeFragment.newInstance(mqttAndroidClient)
+//        if(!addressStringSimplification.isBlank() && addressStringSimplification != "tcp://:" && !inputId.text.toString().isBlank()) {
+            SubscribeFragment.passMQTTAndroidClientToSubscribe(mqttAndroidClient)
+
+            PublishFragment.passMQTTAndroidClientToPublish(mqttAndroidClient)
+
             val transaction = activity?.supportFragmentManager?.beginTransaction()
-            transaction?.replace(R.id.fragment_container, someFragment)
+//            transaction?.replace(R.id.fragment_container, someFragment)
             transaction?.addToBackStack(null)
             transaction?.commit()
-        }
+//        }
 
-        if (inputAddress.isBlank() && inputId.isBlank()
-            && inputPort.isBlank() && addressStringSimplification == "tcp://:"){
-           displayErrorMessage(BLANK_TEXT, view, this)
-        }
-        else {
+//        if (inputAddress.isBlank() && inputId.isBlank()
+//            && inputPort.isBlank() && addressStringSimplification == "tcp://:"){
+//           displayErrorMessage(BLANK_TEXT, view, this)
+//        }
+//        else {
 
             try {
                 val token = mqttAndroidClient.connect()
@@ -114,7 +118,7 @@ class ConnectFragment : Fragment(){
 
                 displayErrorMessage(CONNECTION_FAILURE, view, this)
             }
-    }
+//    }
 //        tv_error.visibility = View.INVISIBLE
     }
 
@@ -137,6 +141,7 @@ class ConnectFragment : Fragment(){
 fun displayErrorMessage(errorString: String, view: View?, fragment: Fragment){
     val errorTextView = view?.rootView?.findViewById(R.id.tv_error) as TextView
     errorTextView.text = errorString
+    errorTextView.setTextColor(ContextCompat.getColor(context!!, R.color.cinnabar))
     errorTextView.visibility = View.VISIBLE
     fragment.hideKeyboard()
 }
@@ -145,10 +150,10 @@ fun displayErrorMessage(errorString: String, view: View?, fragment: Fragment){
     /**
      * Two methods to hide the keyboard after the result is shown
      */
-    fun Fragment.hideKeyboard() {
+    private fun Fragment.hideKeyboard() {
         view?.let { activity?.hideKeyboard(it) }
     }
-    fun Context.hideKeyboard(view: View) {
+    private fun Context.hideKeyboard(view: View) {
         val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }

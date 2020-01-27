@@ -2,11 +2,12 @@
  * @author Igor Dzichkovskii
  */
 
-package com.dzichkovskii.mqttsrm
+package com.dzichkovskii.mqttsrm.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import com.dzichkovskii.mqttsrm.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.dzichkovskii.mqttsrm.fragments.ConnectFragment
 import com.dzichkovskii.mqttsrm.fragments.PublishFragment

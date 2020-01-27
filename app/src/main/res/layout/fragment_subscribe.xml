@@ -8,18 +8,6 @@
 
 
     <TextView
-        android:id="@+id/tv_topic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="25dp"
-        android:text="@string/topic_tv"
-        android:textColor="@android:color/black"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_qos" />
-
-    <TextView
         android:id="@+id/tv_qos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,19 +19,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/btn_subscribe"
+    <TextView
+        android:id="@+id/tv_subscribe_topic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/subscribe"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="25dp"
+        android:text="@string/topic_tv"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.847" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_qos" />
 
     <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chip_group"
+        android:id="@+id/chip_group_subscribe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -82,29 +71,49 @@
     </com.google.android.material.chip.ChipGroup>
 
     <EditText
-        android:id="@+id/et_topic"
+        android:id="@+id/et_subscribe_topic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="60dp"
         android:ems="10"
+        android:hint="@string/topic_subscribe_hint"
+        android:importantForAutofill="no"
         android:inputType="textPersonName"
-        android:hint="@string/topic_hint"
-        app:layout_constraintStart_toEndOf="@+id/tv_topic"
-        app:layout_constraintTop_toTopOf="parent"
-        android:importantForAutofill="no" />
+        app:layout_constraintStart_toEndOf="@+id/tv_subscribe_topic"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_subscribe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
+        android:text="@string/subscribe"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_subscribe_topic"
+        app:layout_constraintVertical_bias="0.01" />
 
     <TextView
         android:id="@+id/tv_error"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="10dp"
         android:text="@string/error_text"
-        android:textColor="@color/cinnabar"
         android:textSize="18sp"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_subscribe" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_subscribe"
+        android:layout_width="409dp"
+        android:layout_height="521dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_error" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

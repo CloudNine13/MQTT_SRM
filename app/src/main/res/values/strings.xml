@@ -4,16 +4,21 @@
     <string name="subscribe">Subscribe</string>
     <string name="publish">Publish</string>
     <string name="broker_address_hint">Your broker address here</string>
-    <string name="broker_address_tv">Broker Address:</string>
+    <string name="broker_address_tv">Address:</string>
     <string name="error_text">Error text</string>
     <string name="broker_id_hint">Your ID here</string>
-    <string name="broker_id_tv">Broker ID:</string>
+    <string name="broker_id_tv">ID:</string>
     <string name="broker_port_hint">Your broker port here</string>
-    <string name="topic_hint">Topic to subscribe here</string>
-    <string name="broker_port_tv">Broker port:</string>
+    <string name="topic_subscribe_hint">Topic to subscribe here</string>
+    <string name="topic_publish_hint">Topic to publish here</string>
+    <string name="message_publish_hint">Your message here</string>
+    <string name="broker_port_tv">Port:</string>
     <string name="chip_1">0</string>
     <string name="chip_2">1</string>
     <string name="chip_3">2</string>
     <string name="qos_tv">QoS:</string>
     <string name="topic_tv">Topic:</string>
+    <string name="rvi_subscribe_message">There is your message</string>
+    <string name="rvi_subscribe_topic_name">There is your topic</string>
+    <string name="tv_publish_message">Message:</string>
 </resources>
