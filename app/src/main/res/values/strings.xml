@@ -9,9 +9,11 @@
     <string name="broker_id_hint">Your ID here</string>
     <string name="broker_id_tv">Broker ID:</string>
     <string name="broker_port_hint">Your broker port here</string>
+    <string name="topic_hint">Topic to subscribe here</string>
     <string name="broker_port_tv">Broker port:</string>
     <string name="chip_1">0</string>
     <string name="chip_2">1</string>
     <string name="chip_3">2</string>
     <string name="qos_tv">QoS:</string>
+    <string name="topic_tv">Topic:</string>
 </resources>

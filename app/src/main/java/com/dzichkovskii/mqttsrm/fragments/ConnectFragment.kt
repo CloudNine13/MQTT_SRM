@@ -18,11 +18,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.dzichkovskii.mqttsrm.R
-import kotlinx.android.synthetic.main.fragment_connect.*
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 
-class ConnectFragment : Fragment() {
+class ConnectFragment : Fragment(){
     companion object{
         const val SUCCESS_TEXT = "Connection established successfully"
         const val FAILURE_TEXT = "Connection wasn't established. Error happened."
@@ -30,7 +29,6 @@ class ConnectFragment : Fragment() {
         const val CONNECTION_FAILURE = "Something went wrong. Probably you have no internet. Try later"
         const val TAG = "ConnectFragment"
     }
-
     private lateinit var mqttAndroidClient: MqttAndroidClient
 
     override fun onCreateView(
@@ -40,13 +38,15 @@ class ConnectFragment : Fragment() {
     ): View? {
         val root = inflater.inflate(R.layout.fragment_connect, container, false)
 
-        //I will leave this values just in case I would need to test the connection
-        //val testCliendId = MqttClient.generateClientId()
-        //val testAddress = "tcp://broker.hivemq.com:1883"
+//        [TEST VALUES]
+//        val testClientId = MqttClient.generateClientId()
+//        val testAddress = "tcp://broker.hivemq.com:1883"
 
-        root.findViewById<Button>(R.id.btn_subscribe).setOnClickListener {
+        root.findViewById<Button>(R.id.btn_connect).setOnClickListener {
             connect(context, view)
+
         }
+
         return root
     }
 
@@ -59,7 +59,6 @@ class ConnectFragment : Fragment() {
      */
     private fun connect(context: Context?,
                         view: View?) {
-
         val inputAddress = view?.findViewById(R.id.tv_broker_address_input) as EditText
         val inputId = view.findViewById(R.id.tv_client_id_input) as EditText
         val inputPort = view.findViewById(R.id.tv_broker_port_input) as EditText
@@ -68,14 +67,26 @@ class ConnectFragment : Fragment() {
         val addressStringSimplification = "tcp://" + inputAddress.text.toString() +
                 ":" + inputPort.text.toString()
 
+//        [TEST VALUES]
+//        val addressStringSimplification = "tcp://broker.hivemq.com:1883"
+//        val testClientId = MqttClient.generateClientId()
+
         mqttAndroidClient = MqttAndroidClient(context?.applicationContext, addressStringSimplification, inputId.text.toString())
 
-        if (inputAddress.isBlank() || inputId.isBlank()
-            || inputPort.isBlank() || addressStringSimplification == "tcp://:"){
-            displayErrorMessage(BLANK_TEXT, view, this)
-            return
+        if(!addressStringSimplification.isBlank() && addressStringSimplification != "tcp://:" && !inputId.text.toString().isBlank()) {
+            val someFragment = SubscribeFragment.newInstance(mqttAndroidClient)
+            val transaction = activity?.supportFragmentManager?.beginTransaction()
+            transaction?.replace(R.id.fragment_container, someFragment)
+            transaction?.addToBackStack(null)
+            transaction?.commit()
+        }
+
+        if (inputAddress.isBlank() && inputId.isBlank()
+            && inputPort.isBlank() && addressStringSimplification == "tcp://:"){
+           displayErrorMessage(BLANK_TEXT, view, this)
         }
         else {
+
             try {
                 val token = mqttAndroidClient.connect()
                 token.actionCallback = object : IMqttActionListener {
@@ -102,17 +113,16 @@ class ConnectFragment : Fragment() {
                 Log.d(TAG, "Exception caught")
 
                 displayErrorMessage(CONNECTION_FAILURE, view, this)
-                return
             }
-        }
-        tv_error.visibility = View.INVISIBLE
+    }
+//        tv_error.visibility = View.INVISIBLE
     }
 
     /**
      * This extension function makes strings look less ugly.
      */
     private fun EditText.isBlank() = this.text.toString().isBlank()
-}
+//}
 
 /**
  * This is the method to show an errors if user didn't use port, id or broker's address.
@@ -132,13 +142,14 @@ fun displayErrorMessage(errorString: String, view: View?, fragment: Fragment){
 }
 
 
-/**
- * Two methods to hide the keyboard after the result is shown
- */
-fun Fragment.hideKeyboard() {
-    view?.let { activity?.hideKeyboard(it) }
-}
-fun Context.hideKeyboard(view: View) {
-    val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-    inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    /**
+     * Two methods to hide the keyboard after the result is shown
+     */
+    fun Fragment.hideKeyboard() {
+        view?.let { activity?.hideKeyboard(it) }
+    }
+    fun Context.hideKeyboard(view: View) {
+        val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    }
 }

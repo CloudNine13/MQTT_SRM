@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
     <Button
-        android:id="@+id/btn_subscribe"
+        android:id="@+id/btn_connect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/connect"
@@ -103,6 +103,6 @@
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_subscribe" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_connect" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
