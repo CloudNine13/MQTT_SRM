@@ -19,6 +19,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.dzichkovskii.mqttsrm.R
+import com.dzichkovskii.mqttsrm.activities.MainActivity
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 
@@ -43,9 +44,9 @@ class ConnectFragment : Fragment(){
 //        val testClientId = MqttClient.generateClientId()
 //        val testAddress = "tcp://broker.hivemq.com:1883"
 
-        root.findViewById<Button>(R.id.btn_connect).setOnClickListener {
+        val connectButton = root.findViewById<Button>(R.id.btn_connect)
+        connectButton.setOnClickListener {
             connect(context, view)
-
         }
 
         return root
@@ -60,6 +61,9 @@ class ConnectFragment : Fragment(){
      */
     private fun connect(context: Context?,
                         view: View?) {
+        val mqttConnectOptions = MqttConnectOptions()
+        mqttConnectOptions.isAutomaticReconnect = true
+        mqttConnectOptions.isCleanSession = false
         //val inputAddress = view?.findViewById(R.id.tv_broker_address_input) as EditText
         //val inputId = view.findViewById(R.id.tv_client_id_input) as EditText
         //val inputPort = view.findViewById(R.id.tv_broker_port_input) as EditText
@@ -75,7 +79,7 @@ class ConnectFragment : Fragment(){
         mqttAndroidClient = MqttAndroidClient(context?.applicationContext, addressStringSimplification, testClientId/*inputId.text.toString()*/)
 
 //        if(!addressStringSimplification.isBlank() && addressStringSimplification != "tcp://:" && !inputId.text.toString().isBlank()) {
-            SubscribeFragment.passMQTTAndroidClientToSubscribe(mqttAndroidClient)
+            SubscribeFragment.passDataToSubscribe(mqttAndroidClient)
 
             PublishFragment.passMQTTAndroidClientToPublish(mqttAndroidClient)
 
@@ -92,9 +96,16 @@ class ConnectFragment : Fragment(){
 //        else {
 
             try {
-                val token = mqttAndroidClient.connect()
+                val token = mqttAndroidClient.connect(mqttConnectOptions)
                 token.actionCallback = object : IMqttActionListener {
                     override fun onSuccess(asyncActionToken: IMqttToken?) {
+
+                        val disconnectedBufferOptions = DisconnectedBufferOptions()
+                        disconnectedBufferOptions.isBufferEnabled = true
+                        disconnectedBufferOptions.bufferSize = 100
+                        disconnectedBufferOptions.isPersistBuffer = false
+                        disconnectedBufferOptions.isDeleteOldestMessages = false
+                        mqttAndroidClient.setBufferOpts(disconnectedBufferOptions)
 
                         Log.d(TAG, "Connection is successful")
 

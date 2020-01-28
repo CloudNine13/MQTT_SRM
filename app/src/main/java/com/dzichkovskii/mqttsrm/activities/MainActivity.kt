@@ -21,9 +21,10 @@ class MainActivity : AppCompatActivity() {
 
         val navView: BottomNavigationView = findViewById(R.id.bottom_navigation)
 
-        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, ConnectFragment()).commit()
-
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, ConnectFragment()).commit()
         navView.setOnNavigationItemSelectedListener(navListener)
+
     }
 
     private val navListener : BottomNavigationView.OnNavigationItemSelectedListener =

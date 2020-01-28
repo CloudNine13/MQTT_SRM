@@ -16,6 +16,8 @@ import com.dzichkovskii.mqttsrm.R
 import com.google.android.material.chip.Chip
 import kotlinx.android.synthetic.main.fragment_subscribe.view.*
 import org.eclipse.paho.android.service.MqttAndroidClient
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
 
@@ -25,13 +27,28 @@ class PublishFragment : Fragment() {
 
         private var mqttAndroidClient: MqttAndroidClient = MqttAndroidClient(null, null, null)
 
+        val fragment = SubscribeFragment()
+
         fun passMQTTAndroidClientToPublish(mqttAndroidClient: MqttAndroidClient): SubscribeFragment {
-            val fragment = SubscribeFragment()
             this.mqttAndroidClient = mqttAndroidClient
             return fragment
         }
 
         const val TAG = "PublishFragment"
+    }
+
+    init {
+        mqttAndroidClient.setCallback(object: MqttCallbackExtended {
+            override fun connectComplete(reconnect: Boolean, serverURI: String?) {
+            }
+            override fun messageArrived(topic: String?, message: MqttMessage?) {
+                fragment.update(message.toString(), topic.toString())
+            }
+            override fun connectionLost(cause: Throwable?) {
+            }
+            override fun deliveryComplete(token: IMqttDeliveryToken?) {
+            }
+        })
     }
 
     private var checkedOption: Int = 0 //Default value of qos
@@ -42,7 +59,6 @@ class PublishFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_publish, container, false)
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
