@@ -19,19 +19,24 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.dzichkovskii.mqttsrm.R
-import com.dzichkovskii.mqttsrm.activities.MainActivity
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 
 class ConnectFragment : Fragment(){
     companion object{
-        const val SUCCESS_TEXT = "Connection established successfully"
-        const val FAILURE_TEXT = "Connection wasn't established. Error happened."
+        const val SUCCESS_TEXT_CONNECT = "Connection established successfully"
+        const val FAILURE_TEXT_CONNECT = "Connection wasn't established. Error happened."
+        const val SUCCESS_TEXT_DISCONNECT = "You have disconnected"
+        const val FAILURE_TEXT_DISCONNECT = "Disconnect went wrong, please try again"
         const val BLANK_TEXT = "Your inputs cannot be empty. Please, write the correct address or ID."
         const val CONNECTION_FAILURE = "Something went wrong. Probably you have no internet. Try later"
         const val TAG = "ConnectFragment"
+        const val STATE_TEXT = "Subscribe text"
+        const val SET_GET_TEXT = "SetGet"
+        private var savedState: Bundle? = null
     }
     private lateinit var mqttAndroidClient: MqttAndroidClient
+    private var isConnected: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,11 +50,49 @@ class ConnectFragment : Fragment(){
 //        val testAddress = "tcp://broker.hivemq.com:1883"
 
         val connectButton = root.findViewById<Button>(R.id.btn_connect)
+        val disconnectButton = root.findViewById<Button>(R.id.btn_disconnect)
+
+        if(savedInstanceState != null && savedState == null) {
+            savedState = savedInstanceState.getBundle(SET_GET_TEXT)
+        }
+        if (savedState != null) {
+            isConnected = savedState?.getBoolean(SET_GET_TEXT)!!
+        }
+        savedState = null
+
+        connectButton.isEnabled = !isConnected
+        disconnectButton.isEnabled = isConnected
+
         connectButton.setOnClickListener {
             connect(context, view)
+            isConnected = true
+            checkingConnection(connectButton, disconnectButton)
+        }
+
+        disconnectButton.setOnClickListener{
+            disconnect()
+            isConnected = false
+            checkingConnection(connectButton, disconnectButton)
         }
 
         return root
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        SubscribeFragment.passIsConnectedToSubscribe(isConnected)
+        savedState = saveState()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBundle(SET_GET_TEXT, if (savedState != null) savedState else saveState())
+    }
+
+    private fun saveState(): Bundle? {
+        val state = Bundle()
+        state.putBoolean(SET_GET_TEXT, isConnected)
+        return state
     }
 
     /**
@@ -80,7 +123,6 @@ class ConnectFragment : Fragment(){
 
 //        if(!addressStringSimplification.isBlank() && addressStringSimplification != "tcp://:" && !inputId.text.toString().isBlank()) {
             SubscribeFragment.passDataToSubscribe(mqttAndroidClient)
-
             PublishFragment.passMQTTAndroidClientToPublish(mqttAndroidClient)
 
             val transaction = activity?.supportFragmentManager?.beginTransaction()
@@ -109,18 +151,16 @@ class ConnectFragment : Fragment(){
 
                         Log.d(TAG, "Connection is successful")
 
-                        Toast.makeText(context, SUCCESS_TEXT, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, SUCCESS_TEXT_CONNECT, Toast.LENGTH_SHORT).show()
                         hideKeyboard()
-                        return
                     }
 
                     override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
 
                         Log.d(TAG, "Connection didn't established")
 
-                        Toast.makeText(context, FAILURE_TEXT, Toast.LENGTH_SHORT).show()
-                        displayErrorMessage(FAILURE_TEXT, view, this@ConnectFragment)
-                        return
+                        Toast.makeText(context, FAILURE_TEXT_CONNECT, Toast.LENGTH_SHORT).show()
+                        displayErrorMessage(FAILURE_TEXT_CONNECT, view, this@ConnectFragment)
                     }
                 }
             } catch (e: MqttException) {
@@ -133,14 +173,46 @@ class ConnectFragment : Fragment(){
 //        tv_error.visibility = View.INVISIBLE
     }
 
+    private fun disconnect() {
+        try {
+            val disconToken = mqttAndroidClient.disconnect()
+            disconToken.actionCallback = object : IMqttActionListener {
+                override fun onSuccess(asyncActionToken: IMqttToken) {
+                    Toast.makeText(context, SUCCESS_TEXT_DISCONNECT, Toast.LENGTH_SHORT).show()
+                }
+                override fun onFailure(
+                    asyncActionToken: IMqttToken,
+                    exception: Throwable
+                ) {
+                    Toast.makeText(context, FAILURE_TEXT_DISCONNECT, Toast.LENGTH_SHORT).show()
+                }
+            }
+        } catch (e: MqttException) {
+            // Give Callback on error here
+        }
+    }
+
     /**
-     * This extension function makes strings look less ugly.
+     * @This extension function makes strings look less ugly.
      */
     private fun EditText.isBlank() = this.text.toString().isBlank()
 //}
 
+    private fun checkingConnection(buttonConnect: Button, buttonDisconnect: Button) {
+        when (isConnected) {
+            true -> {
+                buttonConnect.isEnabled = false
+                buttonDisconnect.isEnabled = true
+            }
+            false -> {
+                buttonConnect.isEnabled = true
+                buttonDisconnect.isEnabled = false
+            }
+        }
+    }
+
 /**
- * This is the method to show an errors if user didn't use port, id or broker's address.
+ * @This is the method to show an errors if user didn't use port, id or broker's address.
  *
  * @param errorString is used to pass the error string to the method. It's not necessary to put it
  * outside the method but I decided to follow the OOP rules. Also en catch we've got another message

@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">MQTT SRM</string>
     <string name="connect">Connect</string>
+    <string name="disconnect">Disconnect</string>
     <string name="subscribe">Subscribe</string>
+    <string name="unsubscribe">Unsubscribe</string>
     <string name="publish">Publish</string>
     <string name="broker_address_hint">Your broker address here</string>
     <string name="broker_address_tv">Address:</string>
