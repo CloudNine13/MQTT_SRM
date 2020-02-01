@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -24,18 +25,44 @@ import org.eclipse.paho.client.mqttv3.*
 class SubscribeFragment : Fragment(), UIUpdaterInterface {
 
     companion object {
-        fun passDataToSubscribe(mqttAndroidClient: MqttAndroidClient): SubscribeFragment {
+
+        /**
+         * @This is the method to get MqttAndroidClient from ConnectFrament
+         * @param mqttAndroidClient is the value we are getting from outside
+         * @see ConnectFragment.connect
+         */
+        fun passMqttAndroidClientToSubscribe(mqttAndroidClient: MqttAndroidClient): SubscribeFragment {
             val fragment = SubscribeFragment()
             this.mqttAndroidClient = mqttAndroidClient
             return fragment
         }
 
+        /**
+         * @This is the method to enable/disable the subscribe/unsubscribe button
+         * @param isConnected is to get the state of the connection of the client
+         * @see ConnectFragment.onDestroy
+         */
         fun passIsConnectedToSubscribe(isConnected: Boolean): SubscribeFragment {
             val fragment = SubscribeFragment()
             this.isConnected = isConnected
             return fragment
         }
 
+        /**
+         * @This is the method to get messages to show from the other fragments
+         * @param topicList is the array of topics come outside
+         * @param messageList is the array of messages come outside
+         * @see PublishFragment.onDestroy
+         */
+        fun passArrayToSubscribe(topicList: ArrayList<String>, messageList: ArrayList<String>): SubscribeFragment{
+            val fragment = SubscribeFragment()
+            this.topicArray = topicList
+            this.messageArray = messageList
+            return fragment
+        }
+
+        private var topicArray = ArrayList<String>()
+        private var messageArray = ArrayList<String>()
         private var mqttAndroidClient: MqttAndroidClient = MqttAndroidClient(null, null, null)
         private var isConnected = false
         private var isSubscribed = false
@@ -45,20 +72,6 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
         const val SUCCESS_TEXT_UNSUBSCRIBE = "You have unsubscribed"
         const val FAILURE_TEXT_UNSUBSCRIBE = "Unsubscription went wrong, please try again"
         const val SET_GET_TEXT = "SetGet"
-    }
-
-    init{
-        mqttAndroidClient.setCallback(object: MqttCallbackExtended {
-            override fun connectComplete(reconnect: Boolean, serverURI: String?) {
-            }
-            override fun messageArrived(topic: String?, message: MqttMessage?) {
-                update(message.toString(), topic.toString())
-            }
-            override fun connectionLost(cause: Throwable?) {
-            }
-            override fun deliveryComplete(token: IMqttDeliveryToken?) {
-            }
-        })
     }
 
     private lateinit var messageText: TextView
@@ -82,6 +95,7 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
             messageText.text = savedState?.getCharSequence(SET_GET_TEXT)
         }
         savedState = null
+
         return root
     }
 
@@ -117,11 +131,30 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
             isSubscribed = false
             checkingSubscription(subscribeButton, unsubscribeButton)
         }
+
+        if (!topicArray.isNullOrEmpty() && !messageArray.isNullOrEmpty()){
+            for(i in topicArray.indices) {
+                update(messageArray[i], topicArray[i])
+            }
+        }
+
+        mqttAndroidClient.setCallback(object: MqttCallbackExtended {
+            override fun connectComplete(reconnect: Boolean, serverURI: String?) {
+            }
+            override fun messageArrived(topic: String?, message: MqttMessage?) {
+                update(message.toString(), topic.toString())
+            }
+            override fun connectionLost(cause: Throwable?) {
+            }
+            override fun deliveryComplete(token: IMqttDeliveryToken?) {
+            }
+        })
     }
 
     override fun onDestroy() {
         super.onDestroy()
         PublishFragment.passIsSubscribedToPublish(isSubscribed)
+        PublishFragment.passMQTTAndroidClientToPublish(mqttAndroidClient)
         savedState = saveState()
     }
 
@@ -130,12 +163,20 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
         outState.putBundle(SET_GET_TEXT, if (savedState != null) savedState else saveState())
     }
 
+    /**
+     * @This is the method to pass the data we want to be saved.
+     */
     private fun saveState(): Bundle? {
         val state = Bundle()
         state.putCharSequence(SET_GET_TEXT, messageText.text.toString())
         return state
     }
 
+    /**
+     * @This is the function makes buttons to be enabled or disabled depending on clicking on them
+     * @param buttonSubscribe is to provide subscribe button to the method
+     * @param buttonUnsubscribe is to provide unsubscribed button to the method
+     */
     private fun checkingSubscription(buttonSubscribe: Button, buttonUnsubscribe: Button) {
         when (isSubscribed) {
             true -> {
@@ -148,7 +189,6 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
             }
         }
     }
-
 
     override fun update(message: String, topic: String) {
 
@@ -164,6 +204,10 @@ Message: $message
         et_subscribe.setSelection(et_subscribe.text.length)
     }
 
+    /**
+     * @This is the method to subscribe the user to the the certain topic, using the tools provided by MQTT
+     *
+     */
     private fun subscribe(){
 
         //val inputTopic = view?.findViewById(R.id.et_subscribe_topic) as EditText
@@ -186,6 +230,11 @@ Message: $message
         } catch (e: Exception){}
     }
 
+    /**
+     * @This is the method to unsubscribe the user of the the certain topic, using the tools provided by MQTT
+     *
+     * @param topic is used to pass the topic we want to unsubscribe
+     */
     private fun unsubscribe(topic: String) {
         try {
             val unsubToken = mqttAndroidClient.unsubscribe(topic)
@@ -197,8 +246,6 @@ Message: $message
                     Toast.makeText(context, FAILURE_TEXT_UNSUBSCRIBE, Toast.LENGTH_SHORT).show()
                 }
             }
-        } catch (e: MqttException) {
-            // Give your callback on failure here
-        }
+        } catch (e: MqttException) {}
     }
 }

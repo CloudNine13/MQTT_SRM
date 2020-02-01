@@ -9,12 +9,17 @@
     <string name="broker_address_tv">Address:</string>
     <string name="error_text">Error text</string>
     <string name="broker_id_hint">Your ID here</string>
+    <string name="client_username_hint">Your username here</string>
+    <string name="client_password_hint">Your password here</string>
     <string name="broker_id_tv">ID:</string>
-    <string name="broker_port_hint">Your broker port here</string>
+    <string name="client_username_tv">Username:</string>
+    <string name="client_password_tv">Password:</string>
+    <string name="broker_port_hint">Port</string>
     <string name="topic_subscribe_hint">Topic to subscribe here</string>
     <string name="topic_publish_hint">Topic to publish here</string>
     <string name="message_publish_hint">Your message here</string>
     <string name="broker_port_tv">Port:</string>
+    <string name="broker_clean_session">Clean session</string>
     <string name="chip_1">0</string>
     <string name="chip_2">1</string>
     <string name="chip_3">2</string>
@@ -23,4 +28,7 @@
     <string name="rvi_subscribe_message">There is your message</string>
     <string name="rvi_subscribe_topic_name">There is your topic</string>
     <string name="tv_publish_message">Message:</string>
+    <string name="leave_empty">Leave empty for unauthenticated access</string>
+    <string name="connect_status_disconnected">Status: disconnected</string>
+    <string name="connect_status_connected">Status: connected to %s</string>
 </resources>

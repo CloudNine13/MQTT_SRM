@@ -4,6 +4,7 @@
 
 package com.dzichkovskii.mqttsrm.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,7 +17,6 @@ import androidx.fragment.app.Fragment
 import com.dzichkovskii.mqttsrm.R
 import com.google.android.material.chip.Chip
 import kotlinx.android.synthetic.main.fragment_publish.view.*
-import kotlinx.android.synthetic.main.fragment_subscribe.view.*
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 
@@ -27,12 +27,23 @@ class PublishFragment : Fragment() {
         private var mqttAndroidClient: MqttAndroidClient = MqttAndroidClient(null, null, null)
         var isSubscribed = false
 
+        /**
+         * @This is the method to get mqttAndroid Client
+         * @param mqttAndroidClient is to get the state of mqttAndroidClient from other fragments
+         * @see ConnectFragment.connect
+         * @see SubscribeFragment.onDestroy
+         */
         fun passMQTTAndroidClientToPublish(mqttAndroidClient: MqttAndroidClient): PublishFragment {
             val fragment = PublishFragment()
             this.mqttAndroidClient = mqttAndroidClient
             return fragment
         }
 
+        /**
+         * @This is the method to enable/disable the publish button
+         * @param isSubscribed is to get the state of the subscription of the client
+         * @see SubscribeFragment.onDestroy
+         */
         fun passIsSubscribedToPublish(isSubscribed: Boolean): PublishFragment {
             val fragment = PublishFragment()
             this.isSubscribed = isSubscribed
@@ -45,12 +56,36 @@ class PublishFragment : Fragment() {
     }
 
     private var checkedOption: Int = 0 //Default value of qos
+    private val topicList = ArrayList<String>()
+    private val messageList = ArrayList<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        mqttAndroidClient.setCallback(object: MqttCallback {
+            override fun messageArrived(topic: String?, message: MqttMessage?) {
+
+                    topicList.add(topic!!)
+                    messageList.add(message.toString())
+
+            }
+
+            override fun connectionLost(cause: Throwable?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun deliveryComplete(token: IMqttDeliveryToken?) {
+                var i = 1
+                Log.d(TAG, "LEL")
+                while (i < 5) {
+                    Log.d(TAG, "LEL")
+                    i++
+                }
+            }
+        })
         return inflater.inflate(R.layout.fragment_publish, container, false)
     }
 
@@ -75,6 +110,19 @@ class PublishFragment : Fragment() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        if (topicList.isNotEmpty() && messageList.isNotEmpty()) {
+           SubscribeFragment.passArrayToSubscribe(topicList, messageList)
+        }
+    }
+
+    /**
+     * @This is the method to publish the message of the user, using tools provided by MQTT
+     * @param topic is to publish the message under the certain topic
+     * @param qos is to choose quality of service
+     */
     private fun publish(topic: String, qos: Int) {
         val encodedPayload: ByteArray
         try {
