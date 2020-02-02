@@ -8,6 +8,7 @@
     <string name="broker_address_hint">Your broker address here</string>
     <string name="broker_address_tv">Address:</string>
     <string name="error_text">Error text</string>
+    <string name="subscribe_error_text">The topic cannot be null. Please, indicate correct topic</string>
     <string name="broker_id_hint">Your ID here</string>
     <string name="client_username_hint">Your username here</string>
     <string name="client_password_hint">Your password here</string>
@@ -25,10 +26,9 @@
     <string name="chip_3">2</string>
     <string name="qos_tv">QoS:</string>
     <string name="topic_tv">Topic:</string>
-    <string name="rvi_subscribe_message">There is your message</string>
-    <string name="rvi_subscribe_topic_name">There is your topic</string>
     <string name="tv_publish_message">Message:</string>
     <string name="leave_empty">Leave empty for unauthenticated access</string>
     <string name="connect_status_disconnected">Status: disconnected</string>
     <string name="connect_status_connected">Status: connected to %s</string>
+    <string name="retained">Retained</string>
 </resources>

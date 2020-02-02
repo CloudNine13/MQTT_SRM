@@ -48,12 +48,18 @@ dependencies {
     testImplementation 'junit:junit:4.13'
 
     //MQTT
+    /*NOTE: The newer version has some bug showing the methods are incorrect while the app works well.
+    * It was decided to use 3:1.2.1 just to evade the situation of no compatibility of the methods and
+    * the version of client.
+    */
+    //noinspection GradleDependency
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.1'
+
     implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1' 
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     androidTestImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     apply plugin: 'kotlin-android-extensions'
-    implementation 'com.android.support:coordinatorlayout:28.0.0'
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
 }

@@ -7,108 +7,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/tv_clean_session"
-        android:layout_width="70dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="13dp"
-        android:lines="2"
-        android:text="@string/broker_clean_session"
-        android:textColor="@android:color/black"
-        android:textSize="18sp"
-        app:layout_constraintStart_toEndOf="@+id/tv_broker_port_input"
-        app:layout_constraintTop_toBottomOf="@+id/tv_broker_address_input" />
-
-    <EditText
-        android:id="@+id/tv_client_password_input"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="13dp"
-        android:ems="10"
-        android:hint="@string/client_password_hint"
-        android:importantForAutofill="no"
-        android:inputType="textPassword"
-        app:layout_constraintStart_toEndOf="@+id/tv_client_password"
-        app:layout_constraintTop_toBottomOf="@+id/tv_client_username_input" />
-
-    <TextView
-        android:id="@+id/tv_client_password"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="32dp"
-        android:text="@string/client_password_tv"
-        android:textColor="@android:color/black"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_client_username" />
-
-    <EditText
-        android:id="@+id/tv_client_username_input"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="6dp"
-        android:layout_marginTop="10dp"
-        android:ems="10"
-        android:hint="@string/client_username_hint"
-        android:importantForAutofill="no"
-        android:inputType="text"
-        app:layout_constraintStart_toEndOf="@+id/tv_client_username"
-        app:layout_constraintTop_toBottomOf="@+id/tv_leave_empty" />
-
-    <TextView
-        android:id="@+id/tv_client_username"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="25dp"
-        android:text="@string/client_username_tv"
-        android:textColor="@android:color/black"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_leave_empty" />
-
-    <Button
-        android:id="@+id/btn_disconnect"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:text="@string/disconnect"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.651"
-        app:layout_constraintStart_toEndOf="@+id/btn_connect"
-        app:layout_constraintTop_toBottomOf="@+id/tv_connect_status"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <Button
-        android:id="@+id/btn_connect"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:text="@string/connect"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.173"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_connect_status"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <TextView
-        android:id="@+id/tv_broker_port"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="52dp"
-        android:layout_marginTop="32dp"
-        android:text="@string/broker_port_tv"
-        android:textColor="@android:color/black"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_broker_address" />
-
-    <TextView
-        android:id="@+id/tv_broker_address"
+        android:id="@+id/tv_connect_broker_address"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -120,7 +19,32 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tv_client_id"
+        android:id="@+id/tv_connect_broker_port"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="32dp"
+        android:text="@string/broker_port_tv"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_connect_broker_address" />
+
+    <TextView
+        android:id="@+id/tv_connect_clean_session"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="13dp"
+        android:lines="2"
+        android:text="@string/broker_clean_session"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/et_connect_broker_port_input"
+        app:layout_constraintTop_toBottomOf="@+id/et_connect_broker_address_input" />
+
+    <TextView
+        android:id="@+id/tv_connect_client_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="68dp"
@@ -129,61 +53,10 @@
         android:textColor="@android:color/black"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_broker_port" />
-
-    <EditText
-        android:id="@+id/tv_broker_port_input"
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="13dp"
-        android:ems="10"
-        android:hint="@string/broker_port_hint"
-        android:importantForAutofill="no"
-        android:inputType="text"
-        app:layout_constraintStart_toEndOf="@+id/tv_broker_port"
-        app:layout_constraintTop_toBottomOf="@+id/tv_broker_address_input" />
-
-    <EditText
-        android:id="@+id/tv_broker_address_input"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="11dp"
-        android:ems="10"
-        android:hint="@string/broker_address_hint"
-        android:importantForAutofill="no"
-        android:inputType="text"
-        app:layout_constraintStart_toEndOf="@+id/tv_broker_address"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/tv_client_id_input"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="13dp"
-        android:ems="10"
-        android:hint="@string/broker_id_hint"
-        android:importantForAutofill="no"
-        android:inputType="text"
-        app:layout_constraintStart_toEndOf="@+id/tv_client_id"
-        app:layout_constraintTop_toBottomOf="@+id/tv_broker_port_input" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_connect_broker_port" />
 
     <TextView
-        android:id="@+id/tv_error"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:text="@string/error_text"
-        android:textSize="18sp"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_connect" />
-
-    <TextView
-        android:id="@+id/tv_leave_empty"
+        android:id="@+id/tv_connect_leave_empty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
@@ -193,7 +66,31 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_client_id_input" />
+        app:layout_constraintTop_toBottomOf="@+id/et_connect_client_id_input" />
+
+    <TextView
+        android:id="@+id/tv_connect_client_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="25dp"
+        android:text="@string/client_username_tv"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_connect_leave_empty" />
+
+    <TextView
+        android:id="@+id/tv_connect_client_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="32dp"
+        android:text="@string/client_password_tv"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_connect_client_username" />
 
     <TextView
         android:id="@+id/tv_connect_status"
@@ -203,18 +100,123 @@
         android:text="@string/connect_status_disconnected"
         android:textColor="@android:color/black"
         android:textSize="15sp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_client_password_input" />
+        app:layout_constraintTop_toBottomOf="@+id/et_connect_client_password_input" />
+
+    <TextView
+        android:id="@+id/tv_subscribe_error"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:text="@string/error_text"
+        android:textSize="18sp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_connect_connect" />
+
+    <EditText
+        android:id="@+id/et_connect_broker_address_input"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="11dp"
+        android:ems="10"
+        android:hint="@string/broker_address_hint"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        app:layout_constraintStart_toEndOf="@+id/tv_connect_broker_address"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/et_connect_broker_port_input"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="13dp"
+        android:ems="10"
+        android:hint="@string/broker_port_hint"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        app:layout_constraintStart_toEndOf="@+id/tv_connect_broker_port"
+        app:layout_constraintTop_toBottomOf="@+id/et_connect_broker_address_input" />
+
+    <EditText
+        android:id="@+id/et_connect_client_id_input"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="13dp"
+        android:ems="10"
+        android:hint="@string/broker_id_hint"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        app:layout_constraintStart_toEndOf="@+id/tv_connect_client_id"
+        app:layout_constraintTop_toBottomOf="@+id/et_connect_broker_port_input" />
+
+    <EditText
+        android:id="@+id/et_connect_client_username_input"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:hint="@string/client_username_hint"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        app:layout_constraintStart_toEndOf="@+id/tv_connect_client_username"
+        app:layout_constraintTop_toBottomOf="@+id/tv_connect_leave_empty" />
+
+    <EditText
+        android:id="@+id/et_connect_client_password_input"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="13dp"
+        android:ems="10"
+        android:hint="@string/client_password_hint"
+        android:importantForAutofill="no"
+        android:inputType="textPassword"
+        app:layout_constraintStart_toEndOf="@+id/tv_connect_client_password"
+        app:layout_constraintTop_toBottomOf="@+id/et_connect_client_username_input" />
+
+    <Button
+        android:id="@+id/btn_connect_connect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="@string/connect"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.173"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_connect_status"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/btn_connect_disconnect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="@string/disconnect"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.651"
+        app:layout_constraintStart_toEndOf="@+id/btn_connect_connect"
+        app:layout_constraintTop_toBottomOf="@+id/tv_connect_status"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Switch
-        android:id="@+id/clean_session_switch"
+        android:id="@+id/sw_connect_clean_session"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="9dp"
         android:layout_marginTop="23dp"
-        app:layout_constraintStart_toEndOf="@+id/tv_clean_session"
-        app:layout_constraintTop_toBottomOf="@+id/tv_broker_address_input" />
+        app:layout_constraintStart_toEndOf="@+id/tv_connect_clean_session"
+        app:layout_constraintTop_toBottomOf="@+id/et_connect_broker_address_input" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

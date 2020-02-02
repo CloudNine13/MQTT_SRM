@@ -13,6 +13,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.dzichkovskii.mqttsrm.R
 import com.dzichkovskii.mqttsrm.interfaces.UIUpdaterInterface
@@ -75,9 +77,11 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
     }
 
     private lateinit var messageText: TextView
+    private lateinit var subscribeTopic: EditText
+    private lateinit var subscribeError: TextView
+    private lateinit var subscribeTopicForUnsubscribe: String
     private var checkedOption: Int = 0 //Default value of qos
     private lateinit var newText: String
-    private val topic = "test"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -86,13 +90,19 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
     ): View? {
         val root = inflater.inflate(R.layout.fragment_subscribe, container, false)
 
-        messageText = root.findViewById(R.id.et_subscribe)
+        subscribeError = root.findViewById(R.id.tv_subscribe_error)
+
+        messageText = root.findViewById(R.id.et_subscribe_messages)
+        subscribeTopic = root.findViewById(R.id.et_subscribe_topic)
 
         if(savedInstanceState != null && savedState == null) {
             savedState = savedInstanceState.getBundle(SET_GET_TEXT)
         }
         if (savedState != null) {
+            val savedTopic = savedState!!.getString("topic")
             messageText.text = savedState?.getCharSequence(SET_GET_TEXT)
+            subscribeTopic.setText(savedTopic)
+            subscribeTopicForUnsubscribe = savedTopic!!
         }
         savedState = null
 
@@ -107,7 +117,7 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
             newText = savedInstanceState.getString(STATE_TEXT)!!
         }
 
-        view.chip_group_subscribe?.setOnCheckedChangeListener { _, checkedId: Int ->
+        view.cg_subscribe?.setOnCheckedChangeListener { _, checkedId: Int ->
             val chip: Chip? = view.findViewById(checkedId)
             val qos = chip?.text.toString().toInt()
             checkedOption = qos
@@ -115,20 +125,20 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
             Log.d(TAG, "Checked option passed with value $checkedOption")
         }
 
-        val subscribeButton = view.findViewById<Button>(R.id.btn_subscribe)
-        val unsubscribeButton = view.findViewById<Button>(R.id.btn_unsubscribe)
+        val subscribeButton = view.findViewById<Button>(R.id.btn_subscribe_subscribe)
+        val unsubscribeButton = view.findViewById<Button>(R.id.btn_subscribe_unsubscribe)
 
         subscribeButton.isEnabled = isConnected && !isSubscribed
         unsubscribeButton.isEnabled = isSubscribed
 
         subscribeButton.setOnClickListener {
-            subscribe()
             isSubscribed = true
+            subscribe()
             checkingSubscription(subscribeButton, unsubscribeButton)
         }
         unsubscribeButton.setOnClickListener {
-            unsubscribe(topic)
             isSubscribed = false
+            unsubscribe()
             checkingSubscription(subscribeButton, unsubscribeButton)
         }
 
@@ -155,12 +165,14 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
         super.onDestroy()
         PublishFragment.passIsSubscribedToPublish(isSubscribed)
         PublishFragment.passMQTTAndroidClientToPublish(mqttAndroidClient)
+        ConnectFragment.passMqttAndroidClientToConnect(mqttAndroidClient)
         savedState = saveState()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBundle(SET_GET_TEXT, if (savedState != null) savedState else saveState())
+
     }
 
     /**
@@ -169,6 +181,7 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
     private fun saveState(): Bundle? {
         val state = Bundle()
         state.putCharSequence(SET_GET_TEXT, messageText.text.toString())
+        state.putString("topic", subscribeTopic.text.toString())
         return state
     }
 
@@ -179,10 +192,12 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
      */
     private fun checkingSubscription(buttonSubscribe: Button, buttonUnsubscribe: Button) {
         when (isSubscribed) {
+
             true -> {
                 buttonSubscribe.isEnabled = false
                 buttonUnsubscribe.isEnabled = true
             }
+
             false -> {
                 buttonSubscribe.isEnabled = true
                 buttonUnsubscribe.isEnabled = false
@@ -192,16 +207,23 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
 
     override fun update(message: String, topic: String) {
 
-        val text = et_subscribe.text.toString()
+        val text = et_subscribe_messages.text.toString()
 
-        newText = """$text
-            
-Topic: $topic 
-Message: $message
-        """
+        newText = if (text.isEmpty()) {
+            """
+                Topic: $topic
+                Message: $message
+            """
+        } else {
+            """$text
+                
+                Topic: $topic 
+                Message: $message
+            """
+        }
 
-        et_subscribe.setText(newText)
-        et_subscribe.setSelection(et_subscribe.text.length)
+        et_subscribe_messages.setText(newText)
+        et_subscribe_messages.setSelection(et_subscribe_messages.text.length)
     }
 
     /**
@@ -210,42 +232,61 @@ Message: $message
      */
     private fun subscribe(){
 
-        //val inputTopic = view?.findViewById(R.id.et_subscribe_topic) as EditText
-        //val topic = inputTopic.text.toString()
-
-
         try {
             Log.d(TAG, "Checked option in subscribe method is $checkedOption")
-            mqttAndroidClient.subscribe(topic,
-                checkedOption, null, object : IMqttActionListener {
-                    override fun onSuccess(asyncActionToken: IMqttToken?) {
-                        Toast.makeText(context, "You have subscribed to topic", Toast.LENGTH_SHORT).show()
-                    }
 
-                    override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                        Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show()
-                    }
+            val subscribeTopic = subscribeTopic.text.toString()
+            subscribeTopicForUnsubscribe = subscribeTopic
+            if (subscribeTopic.isEmpty()) {
+                topicIsEmpty()
+                isSubscribed = false
+            } else {
+                subscribeTopicForUnsubscribe = subscribeTopic
+                mqttAndroidClient.subscribe(subscribeTopic,
+                    checkedOption, null, object : IMqttActionListener {
+                        override fun onSuccess(asyncActionToken: IMqttToken?) {
+                            Toast.makeText(context, "You have subscribed to topic", Toast.LENGTH_SHORT).show()
+                            subscribeError.isVisible = false
+                        }
 
-                })
+                        override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
+                            Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show()
+                            isConnected = false
+                        }
+
+                    })
+            }
         } catch (e: Exception){}
     }
 
     /**
      * @This is the method to unsubscribe the user of the the certain topic, using the tools provided by MQTT
-     *
-     * @param topic is used to pass the topic we want to unsubscribe
      */
-    private fun unsubscribe(topic: String) {
+    private fun unsubscribe() {
         try {
-            val unsubToken = mqttAndroidClient.unsubscribe(topic)
-            unsubToken.actionCallback = object : IMqttActionListener {
-                override fun onSuccess(asyncActionToken: IMqttToken) {
-                    Toast.makeText(context, SUCCESS_TEXT_UNSUBSCRIBE, Toast.LENGTH_SHORT).show()
-                }
-                override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
-                    Toast.makeText(context, FAILURE_TEXT_UNSUBSCRIBE, Toast.LENGTH_SHORT).show()
+            val unsubToken = mqttAndroidClient.unsubscribe(subscribeTopicForUnsubscribe)
+            if (subscribeTopicForUnsubscribe.isEmpty()) {
+                topicIsEmpty()
+                isSubscribed = true
+            }
+            else {
+                unsubToken.actionCallback = object : IMqttActionListener {
+                    override fun onSuccess(asyncActionToken: IMqttToken) {
+                        Toast.makeText(context, SUCCESS_TEXT_UNSUBSCRIBE, Toast.LENGTH_SHORT).show()
+                        subscribeError.isVisible = false
+                    }
+
+                    override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
+                        Toast.makeText(context, FAILURE_TEXT_UNSUBSCRIBE, Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         } catch (e: MqttException) {}
+    }
+
+    private fun topicIsEmpty() {
+        subscribeError.isVisible = true
+        subscribeError.setTextColor(ContextCompat.getColor(context!!, R.color.cinnabar))
+        subscribeError.text = resources.getString(R.string.subscribe_error_text)
     }
 }

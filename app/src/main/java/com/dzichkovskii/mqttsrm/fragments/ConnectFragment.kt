@@ -16,34 +16,43 @@ import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.dzichkovskii.mqttsrm.R
-import kotlinx.android.synthetic.main.fragment_connect.*
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 
 class ConnectFragment : Fragment(){
     companion object{
+
+        private var mqttAndroidClient: MqttAndroidClient = MqttAndroidClient(null, null, null)
+
+        fun passMqttAndroidClientToConnect(mqttAndroidClient: MqttAndroidClient): ConnectFragment {
+            val fragment = ConnectFragment()
+            this.mqttAndroidClient = mqttAndroidClient
+            return fragment
+        }
+
         const val SUCCESS_TEXT_CONNECT = "Connection established successfully"
         const val FAILURE_TEXT_CONNECT = "Connection wasn't established. Error happened."
         const val SUCCESS_TEXT_DISCONNECT = "You have disconnected"
         const val FAILURE_TEXT_DISCONNECT = "Disconnect went wrong, please try again"
         const val BLANK_TEXT = "Your inputs cannot be empty. Please, write the correct address or ID."
         const val CONNECTION_FAILURE = "Something went wrong. Probably you have no internet. Try later"
-        const val CONNECTED = "Status: connected to "
         const val TAG = "ConnectFragment"
-        const val STATE_TEXT = "Subscribe text"
         const val SET_GET_TEXT = "SetGet"
         private var savedState: Bundle? = null
     }
-    private lateinit var mqttAndroidClient: MqttAndroidClient
     private lateinit var statusOfConnection: String
     private var isConnected: Boolean = false
     private var isSessionClean: Boolean = false
     private val mqttConnectOptions = MqttConnectOptions()
+    private lateinit var error: TextView
     private lateinit var address: EditText
     private lateinit var port: EditText
     private lateinit var id: EditText
     private lateinit var username: EditText
     private lateinit var statusTextView: TextView
+    private lateinit var inputAddress: EditText
+    private lateinit var inputPort: EditText
+    private lateinit var inputId: EditText
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,19 +61,21 @@ class ConnectFragment : Fragment(){
     ): View? {
         val root = inflater.inflate(R.layout.fragment_connect, container, false)
 
-        address = root.findViewById(R.id.tv_broker_address_input)
-        port = root.findViewById(R.id.tv_broker_port_input)
-        id = root.findViewById(R.id.tv_client_id_input)
-        username = root.findViewById(R.id.tv_client_username_input)
+        address = root.findViewById(R.id.et_connect_broker_address_input)
+        port = root.findViewById(R.id.et_connect_broker_port_input)
+        id = root.findViewById(R.id.et_connect_client_id_input)
+        username = root.findViewById(R.id.et_connect_client_username_input)
         statusTextView = root.findViewById(R.id.tv_connect_status)
-        val cleanSessionSwitch = root.findViewById<Switch>(R.id.clean_session_switch)
+        inputAddress = root.findViewById(R.id.et_connect_broker_address_input)
+        inputPort = root.findViewById(R.id.et_connect_broker_port_input)
+        inputId = root.findViewById(R.id.et_connect_client_id_input)
+        error = root.findViewById(R.id.tv_subscribe_error)
+        statusOfConnection = activity?.getString(R.string.connect_status_disconnected)!!
 
-//        [TEST VALUES]
-//        val testClientId = MqttClient.generateClientId()
-//        val testAddress = "tcp://broker.hivemq.com:1883"
+        val cleanSessionSwitch = root.findViewById<Switch>(R.id.sw_connect_clean_session)
 
-        val connectButton = root.findViewById<Button>(R.id.btn_connect)
-        val disconnectButton = root.findViewById<Button>(R.id.btn_disconnect)
+        val connectButton = root.findViewById<Button>(R.id.btn_connect_connect)
+        val disconnectButton = root.findViewById<Button>(R.id.btn_connect_disconnect)
 
         if(savedInstanceState != null && savedState == null) {
             savedState = savedInstanceState.getBundle(SET_GET_TEXT)
@@ -84,6 +95,8 @@ class ConnectFragment : Fragment(){
 
         connectButton.isEnabled = !isConnected
         disconnectButton.isEnabled = isConnected
+
+
 
         connectButton.setOnClickListener {
             connect(context, view)
@@ -137,21 +150,15 @@ class ConnectFragment : Fragment(){
      */
     private fun connect(context: Context?,
                         view: View?) {
-        //val inputAddress = view?.findViewById(R.id.tv_broker_address_input) as EditText
-        //val inputId = view.findViewById(R.id.tv_client_id_input) as EditText
-        //val inputPort = view.findViewById(R.id.tv_broker_port_input) as EditText
 
         //Making the string the user needs to put more friendly
-        //val addressStringSimplification = "tcp://" + inputAddress.text.toString() +
-        //       ":" + inputPort.text.toString()
-        //val addressStatus = inputAddress.text.toString() + ":" + inputPort.text.toString()
+        val addressStringSimplification = "tcp://" + inputAddress.text.toString() +
+               ":" + inputPort.text.toString()
 
-//        [TEST VALUES]
-        val addressStringSimplification = "tcp://broker.hivemq.com:1883"
-        val testClientId = MqttClient.generateClientId()
+        val addressStatus = inputAddress.text.toString() + ":" + inputPort.text.toString()
 
-        val usernameEditText = view?.findViewById<EditText>(R.id.tv_client_username_input)
-        val passwordEditText = view?.findViewById<EditText>(R.id.tv_client_password_input)
+        val usernameEditText = view?.findViewById<EditText>(R.id.et_connect_client_username_input)
+        val passwordEditText = view?.findViewById<EditText>(R.id.et_connect_client_password_input)
 
         mqttConnectOptions.isAutomaticReconnect = true
         
@@ -164,23 +171,22 @@ class ConnectFragment : Fragment(){
             val charArray = password.toCharArray()
             mqttConnectOptions.password = charArray
         }
-            mqttAndroidClient = MqttAndroidClient(context?.applicationContext, addressStringSimplification, testClientId/*inputId.text.toString()*/)
+            mqttAndroidClient = MqttAndroidClient(context?.applicationContext, addressStringSimplification, inputId.text.toString())
 
-//        if(!addressStringSimplification.isBlank() && addressStringSimplification != "tcp://:" && !inputId.text.toString().isBlank()) {
+        if(!addressStringSimplification.isBlank() && addressStringSimplification != "tcp://:" && !inputId.text.toString().isBlank()) {
             SubscribeFragment.passMqttAndroidClientToSubscribe(mqttAndroidClient)
             PublishFragment.passMQTTAndroidClientToPublish(mqttAndroidClient)
 
             val transaction = activity?.supportFragmentManager?.beginTransaction()
-//            transaction?.replace(R.id.fragment_container, someFragment)
             transaction?.addToBackStack(null)
             transaction?.commit()
-//        }
+       }
 
-//        if (inputAddress.isBlank() && inputId.isBlank()
-//            && inputPort.isBlank() && addressStringSimplification == "tcp://:"){
-//           displayErrorMessage(BLANK_TEXT, view, this)
-//        }
-//        else {
+        if (inputAddress.isBlank() && inputId.isBlank()
+            && inputPort.isBlank() && addressStringSimplification == "tcp://:"){
+           displayErrorMessage(BLANK_TEXT, this)
+        }
+        else {
 
             try {
                 val token = mqttAndroidClient.connect(mqttConnectOptions)
@@ -194,7 +200,7 @@ class ConnectFragment : Fragment(){
                         disconnectedBufferOptions.isDeleteOldestMessages = false
                         mqttAndroidClient.setBufferOpts(disconnectedBufferOptions)
 
-                        statusOfConnection = resources.getString(R.string.connect_status_connected, /*addressStatus*/addressStringSimplification)
+                        statusOfConnection = resources.getString(R.string.connect_status_connected, addressStatus)
                         view?.findViewById<TextView>(R.id.tv_connect_status)?.text = statusOfConnection
 
                         Log.d(TAG, "Connection is successful")
@@ -206,19 +212,20 @@ class ConnectFragment : Fragment(){
                     override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
 
                         Log.d(TAG, "Connection didn't established")
-
+                        isConnected = false
                         context?.toast(FAILURE_TEXT_CONNECT)
-                        displayErrorMessage(FAILURE_TEXT_CONNECT, view, this@ConnectFragment)
+                        displayErrorMessage(FAILURE_TEXT_CONNECT, this@ConnectFragment)
                     }
                 }
             } catch (e: MqttException) {
 
                 Log.d(TAG, "Exception caught")
 
-                displayErrorMessage(CONNECTION_FAILURE, view, this)
+                displayErrorMessage(CONNECTION_FAILURE, this)
             }
-//    }
-//        tv_error.visibility = View.INVISIBLE
+        }
+
+        error.visibility = View.INVISIBLE
     }
 
     /**
@@ -226,6 +233,7 @@ class ConnectFragment : Fragment(){
      */
     private fun disconnect() {
         try {
+
             val disconnectToken = mqttAndroidClient.disconnect()
             disconnectToken.actionCallback = object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
@@ -238,11 +246,10 @@ class ConnectFragment : Fragment(){
                     exception: Throwable
                 ) {
                     context?.toast(FAILURE_TEXT_DISCONNECT)
+                    isConnected = true
                 }
             }
-        } catch (e: MqttException) {
-            // Give Callback on error here
-        }
+        } catch (e: MqttException) {}
     }
 
     /**
@@ -255,8 +262,6 @@ class ConnectFragment : Fragment(){
      */
     private fun Context.toast(text: CharSequence, duration: Int = Toast.LENGTH_SHORT)
             = Toast.makeText(this, text, duration).show()
-
-//}
 
     /**
      * @This is the function makes buttons to be enabled or disabled depending on clicking on them
@@ -279,18 +284,13 @@ class ConnectFragment : Fragment(){
 /**
  * @This is the method to show an errors if user didn't use port, id or broker's address.
  *
- * @param errorString is used to pass the error string to the method. It's not necessary to put it
- * outside the method but I decided to follow the OOP rules. Also en catch we've got another message
- * to be passed to this method, so it would be more maintainable to drag the strings outside
- * @param view is used to find text view "tv_error" inside the method. Outside it's not working.
  * @param fragment is used to pass the param to the method hideKeyboard()
  *
  */
-fun displayErrorMessage(errorString: String, view: View?, fragment: Fragment){
-    val errorTextView = view?.rootView?.findViewById(R.id.tv_error) as TextView
-    errorTextView.text = errorString
-    errorTextView.setTextColor(ContextCompat.getColor(context!!, R.color.cinnabar))
-    errorTextView.visibility = View.VISIBLE
+private fun displayErrorMessage(errorMessage: String, fragment: Fragment){
+    error.text = errorMessage
+    error.setTextColor(ContextCompat.getColor(context!!, R.color.cinnabar))
+    error.visibility = View.VISIBLE
     fragment.hideKeyboard()
 }
 

@@ -7,22 +7,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-
-    <Button
-        android:id="@+id/btn_unsubscribe"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="7dp"
-        android:text="@string/unsubscribe"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.607"
-        app:layout_constraintStart_toEndOf="@+id/btn_subscribe"
-        app:layout_constraintTop_toBottomOf="@+id/et_subscribe_topic"
-        app:layout_constraintVertical_bias="0.024" />
-
     <TextView
-        android:id="@+id/tv_qos"
+        android:id="@+id/tv_subscribe_qos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -43,16 +29,68 @@
         android:textColor="@android:color/black"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_qos" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_subscribe_qos" />
+
+    <TextView
+        android:id="@+id/tv_subscribe_error"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/error_text"
+        android:textSize="18sp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_subscribe_subscribe" />
+
+    <EditText
+        android:id="@+id/et_subscribe_topic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="60dp"
+        android:ems="10"
+        android:hint="@string/topic_subscribe_hint"
+        android:importantForAutofill="no"
+        android:inputType="textPersonName"
+        app:layout_constraintStart_toEndOf="@+id/tv_subscribe_topic"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_subscribe_error"
+        app:layout_constraintVertical_bias="0.0">
+
+        <EditText
+            android:id="@+id/et_subscribe_messages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:focusable="false"
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine"
+            android:labelFor="@android:id/message"
+            android:textSize="15sp"
+            tools:ignore="LabelFor" />
+
+    </ScrollView>
 
     <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chip_group_subscribe"
+        android:id="@+id/cg_subscribe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.094"
-        app:layout_constraintStart_toEndOf="@+id/tv_qos"
+        app:layout_constraintStart_toEndOf="@+id/tv_subscribe_qos"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.028"
         app:singleLine="true"
@@ -84,21 +122,8 @@
 
     </com.google.android.material.chip.ChipGroup>
 
-    <EditText
-        android:id="@+id/et_subscribe_topic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="60dp"
-        android:ems="10"
-        android:hint="@string/topic_subscribe_hint"
-        android:importantForAutofill="no"
-        android:inputType="textPersonName"
-        app:layout_constraintStart_toEndOf="@+id/tv_subscribe_topic"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <Button
-        android:id="@+id/btn_subscribe"
+        android:id="@+id/btn_subscribe_subscribe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="7dp"
@@ -110,38 +135,17 @@
         app:layout_constraintTop_toBottomOf="@+id/et_subscribe_topic"
         app:layout_constraintVertical_bias="0.024" />
 
-    <TextView
-        android:id="@+id/tv_error"
-        android:layout_width="300dp"
+    <Button
+        android:id="@+id/btn_subscribe_unsubscribe"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="@string/error_text"
-        android:textSize="18sp"
-        android:visibility="invisible"
+        android:layout_marginTop="7dp"
+        android:text="@string/unsubscribe"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_subscribe" />
-
-    <EditText
-        android:id="@+id/et_subscribe"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginEnd="10dp"
-        android:background="@null"
-        android:backgroundTint="#bababa"
-        android:layout_marginBottom="?actionBarSize"
-        android:focusable="false"
-        android:importantForAutofill="no"
-        android:inputType="textMultiLine"
-        android:labelFor="@android:id/message"
-        android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_subscribe"
-        app:layout_constraintVertical_bias="0.0"
-        tools:ignore="LabelFor" />
+        app:layout_constraintHorizontal_bias="0.607"
+        app:layout_constraintStart_toEndOf="@+id/btn_subscribe_subscribe"
+        app:layout_constraintTop_toBottomOf="@+id/et_subscribe_topic"
+        app:layout_constraintVertical_bias="0.024" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

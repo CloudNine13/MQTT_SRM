@@ -4,7 +4,6 @@
 
 package com.dzichkovskii.mqttsrm.fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Switch
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.dzichkovskii.mqttsrm.R
@@ -25,6 +25,7 @@ class PublishFragment : Fragment() {
     companion object {
 
         private var mqttAndroidClient: MqttAndroidClient = MqttAndroidClient(null, null, null)
+        private var savedState: Bundle? = null
         var isSubscribed = false
 
         /**
@@ -52,18 +53,39 @@ class PublishFragment : Fragment() {
 
         const val TAG = "PublishFragment"
         const val PUBLISH_SUCCESS = "You have sent your message"
+        const val STRING_SET_GET_TEXT = "SetGetString"
+        const val BOOLEAN_SET_GET_TEXT = "SetGetBoolean"
         const val PUBLISH_FAILURE = "Your message haven't sent. Please, check your Internet connection"
     }
 
     private var checkedOption: Int = 0 //Default value of qos
+    private lateinit var publishTopic: EditText
+    private lateinit var retainedSwitch: Switch
+    private lateinit var messageToBePublished: EditText
     private val topicList = ArrayList<String>()
     private val messageList = ArrayList<String>()
+    private var retainBoolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        val root = inflater.inflate(R.layout.fragment_publish, container, false)
+
+        publishTopic = root.findViewById(R.id.et_publish_topic)
+        retainedSwitch = root.findViewById(R.id.sw_publish_retained)
+        messageToBePublished = root.findViewById(R.id.et_publish_message)
+
+        if(savedInstanceState != null && savedState == null) {
+            savedState = savedInstanceState.getBundle(STRING_SET_GET_TEXT)
+        }
+        if (savedState != null) {
+            publishTopic.setText(savedState!!.getString(STRING_SET_GET_TEXT))
+            retainBoolean = savedState!!.getBoolean(BOOLEAN_SET_GET_TEXT)
+        }
+        savedState = null
 
         mqttAndroidClient.setCallback(object: MqttCallback {
             override fun messageArrived(topic: String?, message: MqttMessage?) {
@@ -73,26 +95,23 @@ class PublishFragment : Fragment() {
 
             }
 
-            override fun connectionLost(cause: Throwable?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
+            override fun connectionLost(cause: Throwable?) {}
 
-            override fun deliveryComplete(token: IMqttDeliveryToken?) {
-                var i = 1
-                Log.d(TAG, "LEL")
-                while (i < 5) {
-                    Log.d(TAG, "LEL")
-                    i++
-                }
-            }
+            override fun deliveryComplete(token: IMqttDeliveryToken?) {}
         })
-        return inflater.inflate(R.layout.fragment_publish, container, false)
+
+        retainedSwitch.isChecked = retainBoolean
+
+        retainedSwitch.setOnCheckedChangeListener { _, isChecked ->
+            retainBoolean = isChecked
+        }
+        return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.chip_group_publish.setOnCheckedChangeListener { _, checkedId: Int ->
+        view.cg_publish.setOnCheckedChangeListener { _, checkedId: Int ->
             val chip: Chip? = view.findViewById(checkedId)
             val qos = chip?.text.toString().toInt()
             checkedOption = qos
@@ -105,17 +124,26 @@ class PublishFragment : Fragment() {
         buttonPublish.isEnabled = isSubscribed
 
         buttonPublish.setOnClickListener {
-            val topic = view.findViewById<EditText>(R.id.et_publish_topic).text.toString()
-            publish(topic, checkedOption)
+            publish(publishTopic.text.toString(), checkedOption)
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
+        ConnectFragment.passMqttAndroidClientToConnect(mqttAndroidClient)
+
         if (topicList.isNotEmpty() && messageList.isNotEmpty()) {
            SubscribeFragment.passArrayToSubscribe(topicList, messageList)
         }
+        savedState = saveState()
+    }
+
+    private fun saveState(): Bundle? {
+        val state = Bundle()
+        state.putString(STRING_SET_GET_TEXT, publishTopic.text.toString())
+        state.putBoolean(BOOLEAN_SET_GET_TEXT, retainBoolean)
+        return state
     }
 
     /**
@@ -126,9 +154,17 @@ class PublishFragment : Fragment() {
     private fun publish(topic: String, qos: Int) {
         val encodedPayload: ByteArray
         try {
-            val data = view!!.findViewById<EditText>(R.id.et_publish_message).text.toString()
+            var data = messageToBePublished.text.toString()
+
+            if (data.isEmpty()) {
+                data = "[empty message]"
+            }
+
             encodedPayload = data.toByteArray(charset("UTF-8"))
             val message = MqttMessage(encodedPayload)
+
+            message.isRetained = retainBoolean
+
             mqttAndroidClient.publish(topic, message, qos, object : IMqttActionListener{
                 override fun onSuccess(asyncActionToken: IMqttToken?) {
                     Toast.makeText(context, PUBLISH_SUCCESS, Toast.LENGTH_SHORT).show()
