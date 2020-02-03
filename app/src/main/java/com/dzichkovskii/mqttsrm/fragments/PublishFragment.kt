@@ -29,7 +29,7 @@ class PublishFragment : Fragment() {
         var isSubscribed = false
 
         /**
-         * @This is the method to get mqttAndroid Client
+         * This is the method to get mqttAndroid Client
          * @param mqttAndroidClient is to get the state of mqttAndroidClient from other fragments
          * @see ConnectFragment.connect
          * @see SubscribeFragment.onDestroy
@@ -41,7 +41,7 @@ class PublishFragment : Fragment() {
         }
 
         /**
-         * @This is the method to enable/disable the publish button
+         * This is the method to enable/disable the publish button
          * @param isSubscribed is to get the state of the subscription of the client
          * @see SubscribeFragment.onDestroy
          */
@@ -147,7 +147,7 @@ class PublishFragment : Fragment() {
     }
 
     /**
-     * @This is the method to publish the message of the user, using tools provided by MQTT
+     * This is the method to publish the message of the user, using tools provided by MQTT
      * @param topic is to publish the message under the certain topic
      * @param qos is to choose quality of service
      */

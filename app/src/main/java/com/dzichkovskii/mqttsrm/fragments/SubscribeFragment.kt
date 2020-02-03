@@ -29,7 +29,7 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
     companion object {
 
         /**
-         * @This is the method to get MqttAndroidClient from ConnectFrament
+         * This is the method to get MqttAndroidClient from ConnectFrament
          * @param mqttAndroidClient is the value we are getting from outside
          * @see ConnectFragment.connect
          */
@@ -40,7 +40,7 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
         }
 
         /**
-         * @This is the method to enable/disable the subscribe/unsubscribe button
+         * This is the method to enable/disable the subscribe/unsubscribe button
          * @param isConnected is to get the state of the connection of the client
          * @see ConnectFragment.onDestroy
          */
@@ -51,7 +51,7 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
         }
 
         /**
-         * @This is the method to get messages to show from the other fragments
+         * This is the method to get messages to show from the other fragments
          * @param topicList is the array of topics come outside
          * @param messageList is the array of messages come outside
          * @see PublishFragment.onDestroy
@@ -176,7 +176,7 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
     }
 
     /**
-     * @This is the method to pass the data we want to be saved.
+     * This is the method to pass the data we want to be saved.
      */
     private fun saveState(): Bundle? {
         val state = Bundle()
@@ -186,7 +186,7 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
     }
 
     /**
-     * @This is the function makes buttons to be enabled or disabled depending on clicking on them
+     * This is the function makes buttons to be enabled or disabled depending on clicking on them
      * @param buttonSubscribe is to provide subscribe button to the method
      * @param buttonUnsubscribe is to provide unsubscribed button to the method
      */
@@ -205,6 +205,13 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
         }
     }
 
+    /**
+     * This is the method overrides the interface method update.
+     * It receives incoming messages and topics and resets et_subscribe_messages EditView with new messages
+     * @param message receives incoming messages
+     * @param topic receives incoming topic
+     * @see UIUpdaterInterface.update
+     */
     override fun update(message: String, topic: String) {
 
         val text = et_subscribe_messages.text.toString()
@@ -227,7 +234,7 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
     }
 
     /**
-     * @This is the method to subscribe the user to the the certain topic, using the tools provided by MQTT
+     * This is the method to subscribe the user to the the certain topic, using the tools provided by MQTT
      *
      */
     private fun subscribe(){
@@ -260,7 +267,7 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
     }
 
     /**
-     * @This is the method to unsubscribe the user of the the certain topic, using the tools provided by MQTT
+     * This is the method to unsubscribe the user of the the certain topic, using the tools provided by MQTT
      */
     private fun unsubscribe() {
         try {

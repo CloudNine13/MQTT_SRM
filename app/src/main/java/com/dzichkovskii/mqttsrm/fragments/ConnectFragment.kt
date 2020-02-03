@@ -60,7 +60,7 @@ class ConnectFragment : Fragment(){
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_connect, container, false)
-
+        
         address = root.findViewById(R.id.et_connect_broker_address_input)
         port = root.findViewById(R.id.et_connect_broker_port_input)
         id = root.findViewById(R.id.et_connect_client_id_input)
@@ -127,7 +127,7 @@ class ConnectFragment : Fragment(){
     }
 
     /**
-     * @This is the method to save instance activity
+     * This is the method to save instance activity
      */
     private fun saveState(): Bundle? {
         val state = Bundle()
@@ -142,7 +142,7 @@ class ConnectFragment : Fragment(){
     }
 
     /**
-     * @This is the method to connect the user to the broker, using the tools provided by MQTT
+     * This is the method to connect the user to the broker, using the tools provided by MQTT
      *
      * @param context is used to pass context to Mqtt
      * @param view is used to be able to work with views (EditView, TextView y etc.)
@@ -229,7 +229,7 @@ class ConnectFragment : Fragment(){
     }
 
     /**
-     * @This is the function to disconnect user from MQTT, using tools provided by MQTT
+     * This is the function to disconnect user from MQTT, using tools provided by MQTT
      */
     private fun disconnect() {
         try {
@@ -253,18 +253,18 @@ class ConnectFragment : Fragment(){
     }
 
     /**
-     * @This extension function makes strings look less ugly.
+     * This extension function makes strings look less ugly.
      */
     private fun EditText.isBlank() = this.text.toString().isBlank()
 
     /**
-     * @This extension function makes Toast looks less ugly
+     * This extension function makes Toast looks less ugly
      */
     private fun Context.toast(text: CharSequence, duration: Int = Toast.LENGTH_SHORT)
             = Toast.makeText(this, text, duration).show()
 
     /**
-     * @This is the function makes buttons to be enabled or disabled depending on clicking on them
+     * This is the function makes buttons to be enabled or disabled depending on clicking on them
      * @param buttonConnect is to provide connect button to the method
      * @param buttonDisconnect is to provide disconnect button to the method
      */
@@ -282,7 +282,7 @@ class ConnectFragment : Fragment(){
     }
 
 /**
- * @This is the method to show an errors if user didn't use port, id or broker's address.
+ * This is the method to show an errors if user didn't use port, id or broker's address.
  *
  * @param fragment is used to pass the param to the method hideKeyboard()
  *
