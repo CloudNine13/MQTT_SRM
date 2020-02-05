@@ -108,8 +108,8 @@
         app:layout_constraintTop_toBottomOf="@+id/et_connect_client_password_input" />
 
     <TextView
-        android:id="@+id/tv_subscribe_error"
-        android:layout_width="0dp"
+        android:id="@+id/tv_connect_error_message"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginTop="25dp"

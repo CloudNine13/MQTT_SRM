@@ -19,8 +19,8 @@ import androidx.fragment.app.Fragment
 import com.dzichkovskii.mqttsrm.R
 import com.dzichkovskii.mqttsrm.interfaces.UIUpdaterInterface
 import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import kotlinx.android.synthetic.main.fragment_subscribe.*
-import kotlinx.android.synthetic.main.fragment_subscribe.view.*
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 
@@ -73,7 +73,8 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
         const val STATE_TEXT = "Subscribe text"
         const val SUCCESS_TEXT_UNSUBSCRIBE = "You have unsubscribed"
         const val FAILURE_TEXT_UNSUBSCRIBE = "Unsubscription went wrong, please try again"
-        const val SET_GET_TEXT = "SetGet"
+        const val MESSAGE_TO_SAVE = "message"
+        const val TOPIC_TO_SAVE = "topic"
     }
 
     private lateinit var messageText: TextView
@@ -90,17 +91,27 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
     ): View? {
         val root = inflater.inflate(R.layout.fragment_subscribe, container, false)
 
-        subscribeError = root.findViewById(R.id.tv_subscribe_error)
+        subscribeError = root.findViewById(R.id.tv_connect_error_message)
+
+        val chipGroup = root.findViewById<ChipGroup>(R.id.cg_subscribe)
 
         messageText = root.findViewById(R.id.et_subscribe_messages)
         subscribeTopic = root.findViewById(R.id.et_subscribe_topic)
 
+        chipGroup.setOnCheckedChangeListener { _, checkedId: Int ->
+            val chip: Chip? = root.findViewById(checkedId)
+            val qos = chip?.text.toString().toInt()
+            checkedOption = qos
+
+            Log.d(TAG, "Checked option passed with value $checkedOption")
+        }
+
         if(savedInstanceState != null && savedState == null) {
-            savedState = savedInstanceState.getBundle(SET_GET_TEXT)
+            savedState = savedInstanceState.getBundle(MESSAGE_TO_SAVE)
         }
         if (savedState != null) {
-            val savedTopic = savedState!!.getString("topic")
-            messageText.text = savedState?.getCharSequence(SET_GET_TEXT)
+            val savedTopic = savedState!!.getString(TOPIC_TO_SAVE)
+            messageText.text = savedState?.getCharSequence(MESSAGE_TO_SAVE)
             subscribeTopic.setText(savedTopic)
             subscribeTopicForUnsubscribe = savedTopic!!
         }
@@ -115,14 +126,6 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
 
         if(savedInstanceState != null) {
             newText = savedInstanceState.getString(STATE_TEXT)!!
-        }
-
-        view.cg_subscribe?.setOnCheckedChangeListener { _, checkedId: Int ->
-            val chip: Chip? = view.findViewById(checkedId)
-            val qos = chip?.text.toString().toInt()
-            checkedOption = qos
-
-            Log.d(TAG, "Checked option passed with value $checkedOption")
         }
 
         val subscribeButton = view.findViewById<Button>(R.id.btn_subscribe_subscribe)
@@ -171,8 +174,7 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBundle(SET_GET_TEXT, if (savedState != null) savedState else saveState())
-
+        outState.putBundle(MESSAGE_TO_SAVE, if (savedState != null) savedState else saveState())
     }
 
     /**
@@ -180,8 +182,8 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
      */
     private fun saveState(): Bundle? {
         val state = Bundle()
-        state.putCharSequence(SET_GET_TEXT, messageText.text.toString())
-        state.putString("topic", subscribeTopic.text.toString())
+        state.putCharSequence(MESSAGE_TO_SAVE, messageText.text.toString())
+        state.putString(TOPIC_TO_SAVE, subscribeTopic.text.toString())
         return state
     }
 

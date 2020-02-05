@@ -69,7 +69,7 @@ class ConnectFragment : Fragment(){
         inputAddress = root.findViewById(R.id.et_connect_broker_address_input)
         inputPort = root.findViewById(R.id.et_connect_broker_port_input)
         inputId = root.findViewById(R.id.et_connect_client_id_input)
-        error = root.findViewById(R.id.tv_subscribe_error)
+        error = root.findViewById(R.id.tv_connect_error_message)
         statusOfConnection = activity?.getString(R.string.connect_status_disconnected)!!
 
         val cleanSessionSwitch = root.findViewById<Switch>(R.id.sw_connect_clean_session)
@@ -100,7 +100,6 @@ class ConnectFragment : Fragment(){
 
         connectButton.setOnClickListener {
             connect(context, view)
-            isConnected = true
             checkingConnection(connectButton, disconnectButton)
         }
 
@@ -173,18 +172,19 @@ class ConnectFragment : Fragment(){
         }
             mqttAndroidClient = MqttAndroidClient(context?.applicationContext, addressStringSimplification, inputId.text.toString())
 
-        if(!addressStringSimplification.isBlank() && addressStringSimplification != "tcp://:" && !inputId.text.toString().isBlank()) {
+        if(addressStringSimplification.isNotEmpty() && addressStringSimplification != "tcp://:" && inputId.text.toString().isNotEmpty()) {
             SubscribeFragment.passMqttAndroidClientToSubscribe(mqttAndroidClient)
             PublishFragment.passMQTTAndroidClientToPublish(mqttAndroidClient)
 
             val transaction = activity?.supportFragmentManager?.beginTransaction()
             transaction?.addToBackStack(null)
             transaction?.commit()
-       }
+        }
 
-        if (inputAddress.isBlank() && inputId.isBlank()
-            && inputPort.isBlank() && addressStringSimplification == "tcp://:"){
-           displayErrorMessage(BLANK_TEXT, this)
+        if (inputAddress.isEmpty() || inputId.isEmpty()
+            || inputPort.isEmpty() || addressStringSimplification == "tcp://:"){
+            displayErrorMessage(BLANK_TEXT, this)
+            isConnected = false
         }
         else {
 
@@ -206,6 +206,7 @@ class ConnectFragment : Fragment(){
                         Log.d(TAG, "Connection is successful")
 
                         context?.toast(SUCCESS_TEXT_CONNECT)
+                        isConnected = true
                         hideKeyboard()
                     }
 
@@ -255,7 +256,7 @@ class ConnectFragment : Fragment(){
     /**
      * This extension function makes strings look less ugly.
      */
-    private fun EditText.isBlank() = this.text.toString().isBlank()
+    private fun EditText.isEmpty() = this.text.toString().isEmpty()
 
     /**
      * This extension function makes Toast looks less ugly
@@ -281,19 +282,18 @@ class ConnectFragment : Fragment(){
         }
     }
 
-/**
- * This is the method to show an errors if user didn't use port, id or broker's address.
- *
- * @param fragment is used to pass the param to the method hideKeyboard()
- *
- */
-private fun displayErrorMessage(errorMessage: String, fragment: Fragment){
-    error.text = errorMessage
-    error.setTextColor(ContextCompat.getColor(context!!, R.color.cinnabar))
-    error.visibility = View.VISIBLE
-    fragment.hideKeyboard()
-}
-
+    /**
+     * This is the method to show an errors if user didn't use port, id or broker's address.
+     *
+     * @param fragment is used to pass the param to the method hideKeyboard()
+     *
+     */
+    private fun displayErrorMessage(errorMessage: String, fragment: Fragment){
+        error.text = errorMessage
+        error.setTextColor(ContextCompat.getColor(context!!, R.color.cinnabar))
+        error.visibility = View.VISIBLE
+        fragment.hideKeyboard()
+    }
 
     /**
      * Two methods to hide the keyboard after the result is shown
