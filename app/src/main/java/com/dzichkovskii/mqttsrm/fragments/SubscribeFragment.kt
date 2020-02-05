@@ -17,14 +17,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.dzichkovskii.mqttsrm.R
-import com.dzichkovskii.mqttsrm.interfaces.UIUpdaterInterface
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import kotlinx.android.synthetic.main.fragment_subscribe.*
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 
-class SubscribeFragment : Fragment(), UIUpdaterInterface {
+class SubscribeFragment : Fragment() {
 
     companion object {
 
@@ -212,9 +211,9 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
      * It receives incoming messages and topics and resets et_subscribe_messages EditView with new messages
      * @param message receives incoming messages
      * @param topic receives incoming topic
-     * @see UIUpdaterInterface.update
+     *
      */
-    override fun update(message: String, topic: String) {
+    private fun update(message: String, topic: String) {
 
         val text = et_subscribe_messages.text.toString()
 

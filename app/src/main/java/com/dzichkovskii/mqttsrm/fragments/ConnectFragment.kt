@@ -91,6 +91,13 @@ class ConnectFragment : Fragment(){
 
         }
         savedState = null
+
+        val addressStatus = inputAddress.text.toString() + ":" + inputPort.text.toString()
+
+        if(!inputAddress.isEmpty() && !inputPort.isEmpty()) {
+            statusOfConnection = resources.getString(R.string.connect_status_connected, addressStatus)
+        }
+
         cleanSessionSwitch.isChecked = isSessionClean
 
         connectButton.isEnabled = !isConnected
@@ -99,8 +106,7 @@ class ConnectFragment : Fragment(){
 
 
         connectButton.setOnClickListener {
-            connect(context, view)
-            checkingConnection(connectButton, disconnectButton)
+            connect(context, view, connectButton, disconnectButton)
         }
 
         disconnectButton.setOnClickListener{
@@ -145,10 +151,14 @@ class ConnectFragment : Fragment(){
      *
      * @param context is used to pass context to Mqtt
      * @param view is used to be able to work with views (EditView, TextView y etc.)
+     * @param connectButton is used to pass the connect button to the method to evade activation of boolean check
+     * before we've got the callback
+     * @param disconnectButton is used to pass the connect button to the method to evade activation of boolean check
+     * before we've got the callback
      *
      */
     private fun connect(context: Context?,
-                        view: View?) {
+                        view: View?, connectButton: Button, disconnectButton: Button) {
 
         //Making the string the user needs to put more friendly
         val addressStringSimplification = "tcp://" + inputAddress.text.toString() +
@@ -193,6 +203,8 @@ class ConnectFragment : Fragment(){
                 token.actionCallback = object : IMqttActionListener {
                     override fun onSuccess(asyncActionToken: IMqttToken?) {
 
+                        isConnected = true
+                        checkingConnection(connectButton, disconnectButton)
                         val disconnectedBufferOptions = DisconnectedBufferOptions()
                         disconnectedBufferOptions.isBufferEnabled = true
                         disconnectedBufferOptions.bufferSize = 100
@@ -206,7 +218,6 @@ class ConnectFragment : Fragment(){
                         Log.d(TAG, "Connection is successful")
 
                         context?.toast(SUCCESS_TEXT_CONNECT)
-                        isConnected = true
                         hideKeyboard()
                     }
 
