@@ -279,6 +279,7 @@ class SubscribeFragment : Fragment(), UIUpdaterInterface {
                 isSubscribed = true
             }
             else {
+                et_subscribe_messages.text.clear()
                 unsubToken.actionCallback = object : IMqttActionListener {
                     override fun onSuccess(asyncActionToken: IMqttToken) {
                         Toast.makeText(context, SUCCESS_TEXT_UNSUBSCRIBE, Toast.LENGTH_SHORT).show()
