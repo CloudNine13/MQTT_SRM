@@ -219,14 +219,14 @@ class SubscribeFragment : Fragment() {
 
         newText = if (text.isEmpty()) {
             """
-                Topic: $topic
-                Message: $message
+Topic: $topic
+Message: $message
             """
         } else {
             """$text
                 
-                Topic: $topic 
-                Message: $message
+Topic: $topic 
+Message: $message
             """
         }
 
