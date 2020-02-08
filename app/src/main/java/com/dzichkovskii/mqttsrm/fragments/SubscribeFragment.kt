@@ -150,16 +150,12 @@ class SubscribeFragment : Fragment() {
             }
         }
 
-        mqttAndroidClient.setCallback(object: MqttCallbackExtended {
-            override fun connectComplete(reconnect: Boolean, serverURI: String?) {
-            }
+        mqttAndroidClient.setCallback(object: MqttCallback {
             override fun messageArrived(topic: String?, message: MqttMessage?) {
                 update(message.toString(), topic.toString())
             }
-            override fun connectionLost(cause: Throwable?) {
-            }
-            override fun deliveryComplete(token: IMqttDeliveryToken?) {
-            }
+            override fun connectionLost(cause: Throwable?) {}
+            override fun deliveryComplete(token: IMqttDeliveryToken?) {}
         })
     }
 
